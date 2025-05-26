@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Create Profile</title>
+  </head>
+  <body
+    style="
+      font-family: Arial, sans-serif;
+      background-color: #23536c;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    "
+  >
+    <div style="background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); width: 300px">
+      <h2 style="text-align: center; margin-bottom: 20px">Create Profile</h2>
+
+      <div id="message" style="margin-bottom: 15px; text-align: center; font-size: 14px;"></div>
+
+      <label for="name" style="display: block; margin-bottom: 5px">Name</label>
+      <input
+        type="text"
+        id="name"
+        placeholder="Enter name"
+        style="width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px"
+      />
+
+      <label for="email" style="display: block; margin-bottom: 5px">Email</label>
+      <input
+        type="email"
+        id="email"
+        placeholder="Enter email"
+        style="width: 100%; padding: 8px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 5px"
+      />
+
+      <div style="display: flex; justify-content: space-between">
+        <button
+          onclick="history.back()"
+          style="padding: 10px 15px; border: none; border-radius: 5px; background-color: #ccc; cursor: pointer"
+        >
+          Back
+        </button>
+        <button
+          onclick="createProfile()"
+          style="
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: orange;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+          "
+        >
+          Create
+        </button>
+      </div>
+    </div>
+
+    <script>
+      function createProfile() {
+        const name = document.getElementById("name").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const messageEl = document.getElementById("message");
+
+        messageEl.innerText = '';
+        messageEl.style.color = '';
+
+        if (!name || !email) {
+          messageEl.innerText = 'Please fill in both fields.';
+          messageEl.style.color = 'red';
+          return;
+        }
+
+        fetch("/api/profile", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ name, email })
+        })
+          .then(async (response) => {
+            const data = await response.json();
+            if (response.ok) {
+              const id = data.id;
+              if (id) {
+                messageEl.innerText = 'Profile created successfully. Redirecting...';
+                messageEl.style.color = 'green';
+                setTimeout(() => {
+                  window.location.href = `/profile/${id}`;
+                }, 1000);
+              }
+            } else {
+              console.log(data)
+              messageEl.innerText = data.error || 'Failed to create profile.';
+              messageEl.style.color = 'red';
+            }
+          })
+          .catch((error) => {
+            messageEl.innerText = 'Error: ' + error.message;
+            messageEl.style.color = 'red';
+          });
+      }
+    </script>
+  </body>
+</html>

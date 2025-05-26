@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FoodChat AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-orange-50 flex items-center justify-center min-h-screen">
+
+  <div class="w-full max-w-xl bg-white shadow-xl rounded-lg flex flex-col overflow-hidden h-[90vh]">
+    
+    <!-- Header -->
+   <div class="bg-[#23536c] text-white p-4 flex justify-between items-center">
+  
+  <div>
+    <div class="text-lg font-semibold">🍔 FoodChat AI</div>
+    <div class="text-sm text-orange-100">Your AI Food Assistant</div>
+  </div>
+
+  <!-- View Profile Button -->
+  <button 
+    onclick="window.location.href='/profile/{{.UserID}}'" 
+    class="bg-[#317aa0] hover:bg-[#317aa0] text-white text-sm px-3 py-1 rounded-md shadow">
+    View Profile
+  </button>
+</div>
+
+    <!-- Chat messages -->
+    <div id="chat" class="flex-1 p-4 space-y-4 overflow-y-auto">
+      <!-- Example user message -->
+      <div class="flex justify-end">
+        <div class="bg-[#317aa0] text-white p-3 rounded-lg max-w-xs">
+          What can I cook with chicken and rice?
+        </div>
+      </div>
+
+      <!-- Example AI message -->
+      <div class="flex justify-start">
+        <div class="bg-orange-200 text-gray-800 p-3 rounded-lg max-w-xs">
+          You can make Chicken Fried Rice! Want the recipe?
+        </div>
+      </div>
+    </div>
+
+    <!-- Input bar -->
+    <form id="chatForm" class="flex items-center border-t border-gray-300 p-3">
+      <input
+        id="userInput"
+        type="text"
+        placeholder="Ask FoodChat AI something..."
+        class="flex-1 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-1 focus:border-[#23536c]"
+      />
+      <button type="submit" class="ml-3 bg-[#23536c] text-white px-4 py-2 rounded-lg hover:bg-[#317aa0]">
+        Send
+      </button>
+    </form>
+
+  </div>
+
+  <script>
+    const chat = document.getElementById('chat');
+    const form = document.getElementById('chatForm');
+    const input = document.getElementById('userInput');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const msg = input.value.trim();
+      if (!msg) return;
+
+      // Append user message
+      const userBubble = document.createElement('div');
+      userBubble.className = 'flex justify-end';
+      userBubble.innerHTML = `<div class="bg-[#317aa0] p-3 rounded-lg max-w-xs text-white">${msg}</div>`;
+      chat.appendChild(userBubble);
+
+      // Scroll to bottom
+      chat.scrollTop = chat.scrollHeight;
+
+      input.value = '';
+
+      // Fake AI response for now (replace with Go API)
+      const aiBubble = document.createElement('div');
+      aiBubble.className = 'flex justify-start';
+      aiBubble.innerHTML = `<div class="bg-orange-200 p-3 rounded-lg max-w-xs text-gray-800">FoodChat AI is Thinking...</div>`;
+      chat.appendChild(aiBubble);
+      chat.scrollTop = chat.scrollHeight;
+
+      // Simulate AI delay
+      setTimeout(() => {
+        aiBubble.innerHTML = `<div class="bg-orange-200 p-3 rounded-lg max-w-xs text-gray-800">
+          Try Chicken Alfredo Pasta 🍝 — easy and delicious!
+        </div>`;
+        chat.scrollTop = chat.scrollHeight;
+      }, 1000);
+    });
+  </script>
+
+</body>
+</html>

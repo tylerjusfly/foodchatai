@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body
+    class="bg-cover bg-center min-h-screen flex items-center justify-center"
+    style="background-image: url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e')"
+  >
+    <div class="bg-[#23536c] text-white p-6 rounded-2xl w-full max-w-lg shadow-2xl">
+      <!-- Header -->
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold">Profile</h2>
+        <div class="flex gap-4 text-white/80">
+          <button title="Chat">💬</button>
+          <button title="Toggle Mode">🌓</button>
+          <button title="Notifications">🔔</button>
+          <button title="More">⋮</button>
+        </div>
+      </div>
+
+      <!-- Profile Info -->
+      <div class="flex flex-col items-center">
+        <img
+          src="https://randomuser.me/api/portraits/men/32.jpg"
+          alt="Profile"
+          class="w-24 h-24 rounded-full mb-3 border-4 border-white"
+        />
+        <h1 class="text-2xl font-semibold">{{.Name}}</h1>
+        <p class="text-sm text-blue-200">Snowboarder, superhero and writer.</p>
+        <p class="text-sm text-blue-200 mb-4 text-center px-4">Sometimes I work at Google as Executive Chairman</p>
+
+        <!-- Stats -->
+        <div class="w-full bg-[#317aa0] p-4 rounded-xl mb-4 flex justify-around">
+          <div class="text-center">
+            <p class="font-bold text-lg">0</p>
+            <p class="text-sm text-blue-300">Chats</p>
+          </div>
+          <div class="text-center">
+            <p class="font-bold text-lg">0</p>
+            <p class="text-sm text-blue-300">Plans</p>
+          </div>
+          <div class="text-center">
+            <p class="font-bold text-lg">0</p>
+            <p class="text-sm text-blue-300">Following</p>
+          </div>
+        </div>
+
+        <!-- Follow Button -->
+        <div class="w-full text-center mb-4">
+          <button
+            onclick="CreateChat()"
+            class="bg-white text-[#23536c] px-6 py-2 rounded-full font-semibold hover:bg-blue-100 transition"
+          >
+            Chat With AI
+          </button>
+        </div>
+
+        <!-- Editable Email Field -->
+        <div class="w-full">
+          <label class="block text-blue-200 text-sm mb-1">Email</label>
+
+          <!-- View Mode -->
+          <div id="emailDisplay" class="flex justify-between items-center">
+            <span id="emailText" class="text-white">{{.Email}}</span>
+            <button onclick="toggleEdit()" class="text-blue-200 hover:text-white text-sm">Edit ✏️</button>
+          </div>
+
+          <!-- Edit Mode -->
+          <div id="emailEdit" class="hidden flex-col gap-2">
+            <input
+              id="emailInput"
+              type="email"
+              value="{{.Email}}"
+              class="w-full px-4 py-2 mt-2 rounded-lg text-black bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+            <button onclick="saveEmail()" class="mt-2 bg-white text-blue-700 px-4 py-2 rounded font-semibold hover:bg-blue-100">
+              Save ✅
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function toggleEdit() {
+        document.getElementById("emailDisplay").classList.add("hidden");
+        document.getElementById("emailEdit").classList.remove("hidden");
+      }
+
+      function saveEmail() {
+        const newEmail = document.getElementById("emailInput").value;
+        document.getElementById("emailText").textContent = newEmail;
+        document.getElementById("emailDisplay").classList.remove("hidden");
+        document.getElementById("emailEdit").classList.add("hidden");
+      }
+
+      async function CreateChat() {
+        try {
+          const response = await fetch("/chat?userId={{.ID}}", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            }
+          });
+
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+
+          const data = await response.json();
+          if (data.id) {
+            window.location.href = `/chat/${data.id}`;
+          } else {
+            alert("No ID returned from server.");
+          }
+        } catch (error) {
+          console.error("Error creating chat:", error);
+          alert("Failed to create chat. Try again.");
+        }
+      }
+    </script>
+  </body>
+</html>

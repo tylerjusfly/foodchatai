@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FootChat AI</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #0b0d2a;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      height: 100vh;
+    }
+
+    .logo {
+      margin-top: 50px;
+      text-align: center;
+    }
+
+    .logo img {
+      width: 100px;
+      margin-bottom: 20px;
+      border-radius: 50%;
+    }
+
+    .logo h1 {
+      font-size: 2em;
+      margin: 0;
+    }
+
+    .logo h1 span {
+      color: #5187a6;
+      font-weight: 700;
+    }
+
+    .menu {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      width: 80%;
+      max-width: 300px;
+    }
+
+    .menu button {
+      background-color: #23536c;
+      border: none;
+      padding: 15px;
+      border-radius: 25px;
+      color: #fff;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: background-color 0.2s ease-in-out;
+    }
+
+    .menu button:hover {
+      background-color: #317aa0;
+    }
+
+    .bottom-icons {
+      display: flex;
+      gap: 40px;
+      margin-bottom: 30px;
+      font-size: 22px;
+    }
+
+    .bottom-icons a {
+      color: #fff;
+      text-decoration: none;
+      transition: color 0.2s ease-in-out;
+    }
+
+    .bottom-icons img:hover {
+  transform: scale(1.1);
+}
+
+    .bottom-icons a:hover {
+      color: #8ab9d1;
+    }
+
+    .icon {
+      font-family: Arial, sans-serif;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="logo">
+    <img src="https://cdn-icons-png.flaticon.com/512/4712/4712027.png" alt="Chat Logo" />
+    <h1><span>{{.Title1}}</span> {{.Title2}}</h1>
+  </div>
+
+  <div class="menu">
+    <button onclick="window.location.href='chat'"><span class="icon">💬</span>Chat with AI</button>
+    <button onclick="window.location.href='profile/create'"><span class="icon">🧍‍♂️</span>Create a Profile</button>
+    <button onclick="window.location.href='login'"><span class="icon"> 🔐 </span>SSO Login</button>
+  </div>
+
+ <div class="bottom-icons">
+  <a href="https://github.com/" title="GitHub">
+    <img src="https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png" alt="GitHub" style="width: 30px; height: 30px;">
+  </a>
+  <a href="https://linkedin.com/" title="LinkedIn">
+    <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" alt="LinkedIn" style="width: 30px; height: 30px;">
+  </a>
+  <a href="https://yourwebsite.com/" title="Website">
+    <img src="https://cdn-icons-png.flaticon.com/512/1006/1006771.png" alt="Website" style="width: 30px; height: 30px;">
+  </a>
+</div>
+
+
+</body>
+</html>

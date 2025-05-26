@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Chat</title>
+  <style>
+    body {
+  font-family: Arial, sans-serif;
+  background-color: #f3f4f6;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.container {
+  text-align: center;
+}
+
+#createChatBtn {
+  padding: 12px 24px;
+  font-size: 18px;
+  color: white;
+  background-color: #3b82f6;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#createChatBtn:hover {
+  background-color: #2563eb;
+}
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <button id="createChatBtn">Create Chat</button>
+  </div>
+
+  <script>
+    document.getElementById("createChatBtn").addEventListener("click", async () => {
+      try {
+        const response = await fetch("/chat?userId={{.UserID}}", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        const data = await response.json();
+        if (data.id) {
+          window.location.href = `/chat/${data.id}`;
+        } else {
+          alert("No ID returned from server.");
+        }
+      } catch (error) {
+        console.error("Error creating chat:", error);
+        alert("Failed to create chat. Try again.");
+      }
+    });
+  </script>
+</body>
+</html>
