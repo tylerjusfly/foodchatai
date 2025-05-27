@@ -15,3 +15,10 @@ type Chat struct {
 	UserID   primitive.ObjectID `json:"user_id" bson:"user_id"`
 	Title    string				`json:"title" bson:"title"`
 }
+
+
+type ChatMessage struct {
+    Sender    string `json:"sender"`
+    Message   string `json:"message"`
+    // Timestamp string `json:"timestamp"`
+}

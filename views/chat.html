@@ -29,19 +29,29 @@
     <!-- Chat messages -->
     <div id="chat" class="flex-1 p-4 space-y-4 overflow-y-auto">
       <!-- Example user message -->
-      <div class="flex justify-end">
+      <!-- <div class="flex justify-end">
         <div class="bg-[#317aa0] text-white p-3 rounded-lg max-w-xs">
           What can I cook with chicken and rice?
         </div>
-      </div>
+      </div> -->
 
       <!-- Example AI message -->
       <div class="flex justify-start">
         <div class="bg-orange-200 text-gray-800 p-3 rounded-lg max-w-xs">
-          You can make Chicken Fried Rice! Want the recipe?
+          Hello! How can I assist you with your nutrition and eating habits today?
         </div>
       </div>
+
+
+       {{range .Chats}}
+  <div class="flex {{if eq .Sender "USER"}}justify-end{{else}}justify-start{{end}}">
+    <div class="{{if eq .Sender "USER"}}bg-[#317aa0] text-white{{else}}bg-orange-200 text-gray-800{{end}} p-3 rounded-lg max-w-xs">
+      {{.Message}}
     </div>
+  </div>
+{{end}}
+    </div>
+
 
     <!-- Input bar -->
     <form id="chatForm" class="flex items-center border-t border-gray-300 p-3">
@@ -63,7 +73,7 @@
   const form = document.getElementById('chatForm');
   const input = document.getElementById('userInput');
 
-  const chatId = "12345"; // Replace with dynamic chat_id logic if needed
+  const chatId = "{{.ChatID}}";
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();

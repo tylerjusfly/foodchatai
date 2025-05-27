@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/tylerjusfly/foodchatai/internal/database"
 	"github.com/tylerjusfly/foodchatai/internal/generators"
 	"github.com/tylerjusfly/foodchatai/internal/models"
 	"go.mongodb.org/mongo-driver/bson"
@@ -28,12 +29,11 @@ func GetChatIndex(c *fiber.Ctx) error {
 func GetChatPage(c *fiber.Ctx) error {
 
 	var chatid = c.Params("chatId")
-	// var userId = c.Query("userId")
 
 	// Convert string to MongoDB ObjectID
 	objectID, err := primitive.ObjectIDFromHex(chatid)
 	if err != nil {
-		return c.Status(400).JSON(fiber.Map{"error": "Invalid ID format"})
+		return c.Render("chat", fiber.Map{"error": "Invalid ID format"})
 	}
 
 	// Get database from context
@@ -59,13 +59,17 @@ func GetChatPage(c *fiber.Ctx) error {
 				"result": nil,
 			})
 		}
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+		return c.Status(500).JSON(fiber.Map{
 			"error": "Failed to query database",
 		})
 	}
+	
+	val, _ := database.LoadChat(chatid)
 
 	return c.Render("chat", fiber.Map{
 		"UserID": result.UserID.Hex(),
+		"ChatID": result.ID.Hex(),
+		"Chats": val,
 	})
 }
 
@@ -137,9 +141,28 @@ func ReplyChat(c *fiber.Ctx) error {
 	}
 
 	// Save In redis for 1hr
+	database.PersistMessage(input.Chatid, "USER", input.Text)
+	database.PersistMessage(input.Chatid, "AI", answers)
 
 	return c.Status(201).JSON(fiber.Map{
 		"response": answers,
 	})
 
 }
+
+// func GetAllRedisData(c *fiber.Ctx) error {
+
+// 	val, err := database.LoadChat("6835d84d563da2af95848d87")
+
+// 	fmt.Println(err)
+
+// 	if err != nil {
+// 		return c.Status(500).JSON(fiber.Map{
+// 			"error": err,
+// 		})
+// 	}
+
+// 	return c.Status(200).JSON(fiber.Map{
+// 		"data": val,
+// 	})
+// }
