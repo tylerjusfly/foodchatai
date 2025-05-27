@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/tylerjusfly/foodchatai/internal/generators"
 	"github.com/tylerjusfly/foodchatai/internal/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -108,4 +109,37 @@ func CreateChat(c *fiber.Ctx) error {
 	return c.Status(201).JSON(fiber.Map{
 		"id": result.InsertedID,
 	})
+}
+
+func ReplyChat(c *fiber.Ctx) error {
+
+	var input struct {
+		Text    string `json:"text"`
+		Chatid string `json:"chat_id"`
+	}
+
+	if err := c.BodyParser(&input); err != nil{
+		return c.Status(400).JSON(fiber.Map{"error": "error in Json"})
+	}
+
+	if input.Text == ""{
+		return c.Status(400).JSON(fiber.Map{"error": "text cannot be empty"})
+	}
+
+	if input.Chatid == ""{
+		return c.Status(400).JSON(fiber.Map{"error": "chat id is required"})
+	}
+
+	answers, err := generators.OpenaiGenerator(input.Text)
+
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "failed to connect to openai"})
+	}
+
+	// Save In redis for 1hr
+
+	return c.Status(201).JSON(fiber.Map{
+		"response": answers,
+	})
+
 }

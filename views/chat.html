@@ -59,42 +59,62 @@
   </div>
 
   <script>
-    const chat = document.getElementById('chat');
-    const form = document.getElementById('chatForm');
-    const input = document.getElementById('userInput');
+  const chat = document.getElementById('chat');
+  const form = document.getElementById('chatForm');
+  const input = document.getElementById('userInput');
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const msg = input.value.trim();
-      if (!msg) return;
+  const chatId = "12345"; // Replace with dynamic chat_id logic if needed
 
-      // Append user message
-      const userBubble = document.createElement('div');
-      userBubble.className = 'flex justify-end';
-      userBubble.innerHTML = `<div class="bg-[#317aa0] p-3 rounded-lg max-w-xs text-white">${msg}</div>`;
-      chat.appendChild(userBubble);
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const msg = input.value.trim();
+    if (!msg) return;
 
-      // Scroll to bottom
-      chat.scrollTop = chat.scrollHeight;
+    // Append user message
+    const userBubble = document.createElement('div');
+    userBubble.className = 'flex justify-end';
+    userBubble.innerHTML = `<div class="bg-[#317aa0] p-3 rounded-lg max-w-xs text-white">${msg}</div>`;
+    chat.appendChild(userBubble);
+    chat.scrollTop = chat.scrollHeight;
 
-      input.value = '';
+    input.value = '';
 
-      // Fake AI response for now (replace with Go API)
-      const aiBubble = document.createElement('div');
-      aiBubble.className = 'flex justify-start';
-      aiBubble.innerHTML = `<div class="bg-orange-200 p-3 rounded-lg max-w-xs text-gray-800">FoodChat AI is Thinking...</div>`;
-      chat.appendChild(aiBubble);
-      chat.scrollTop = chat.scrollHeight;
+    // Append loading AI message
+    const aiBubble = document.createElement('div');
+    aiBubble.className = 'flex justify-start';
+    aiBubble.innerHTML = `<div class="bg-orange-200 p-3 rounded-lg max-w-xs text-gray-800">FoodChat AI is thinking...</div>`;
+    chat.appendChild(aiBubble);
+    chat.scrollTop = chat.scrollHeight;
 
-      // Simulate AI delay
-      setTimeout(() => {
-        aiBubble.innerHTML = `<div class="bg-orange-200 p-3 rounded-lg max-w-xs text-gray-800">
-          Try Chicken Alfredo Pasta 🍝 — easy and delicious!
-        </div>`;
+    try {
+      const response = await fetch('/ai/reply', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: msg
+        })
+      });
+
+      const data = await response.json();
+      if(response.ok){
+        aiBubble.innerHTML = `<div class="bg-orange-200 p-3 rounded-lg max-w-xs text-gray-800">${data.response}</div>`;
         chat.scrollTop = chat.scrollHeight;
-      }, 1000);
-    });
-  </script>
+
+      }else{
+        aiBubble.innerHTML = `<div class="bg-red-200 p-3 rounded-lg max-w-xs text-red-800">Oops! ${data.error}.</div>`;
+      chat.scrollTop = chat.scrollHeight;
+      }
+
+    } catch (error) {
+      aiBubble.innerHTML = `<div class="bg-red-200 p-3 rounded-lg max-w-xs text-red-800">Oops! Something went wrong.</div>`;
+      chat.scrollTop = chat.scrollHeight;
+      console.error('AI response error:', error);
+    }
+  });
+</script>
 
 </body>
 </html>
