@@ -64,10 +64,11 @@ func main() {
 	app.Get("/chat", handlers.GetChatIndex)
 	app.Post("/chat", handlers.CreateChat)
 	app.Get("/chat/:chatId", handlers.GetChatPage)
+	app.Get("/mychats/:userid", handlers.GetMyChats)
+
+	app.Post("/chats/delete/:chatid", handlers.DeleteChat)
 
 	app.Post("/ai/reply", handlers.ReplyChat)
-
-	// app.Get("/redis", handlers.GetAllRedisData)
 
 	app.Use(func(c *fiber.Ctx) error {
 		// return c.Status(400)

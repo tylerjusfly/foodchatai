@@ -63,13 +63,13 @@ func GetChatPage(c *fiber.Ctx) error {
 			"error": "Failed to query database",
 		})
 	}
-	
+
 	val, _ := database.LoadChat(chatid)
 
 	return c.Render("chat", fiber.Map{
 		"UserID": result.UserID.Hex(),
 		"ChatID": result.ID.Hex(),
-		"Chats": val,
+		"Chats":  val,
 	})
 }
 
@@ -118,19 +118,19 @@ func CreateChat(c *fiber.Ctx) error {
 func ReplyChat(c *fiber.Ctx) error {
 
 	var input struct {
-		Text    string `json:"text"`
+		Text   string `json:"text"`
 		Chatid string `json:"chat_id"`
 	}
 
-	if err := c.BodyParser(&input); err != nil{
+	if err := c.BodyParser(&input); err != nil {
 		return c.Status(400).JSON(fiber.Map{"error": "error in Json"})
 	}
 
-	if input.Text == ""{
+	if input.Text == "" {
 		return c.Status(400).JSON(fiber.Map{"error": "text cannot be empty"})
 	}
 
-	if input.Chatid == ""{
+	if input.Chatid == "" {
 		return c.Status(400).JSON(fiber.Map{"error": "chat id is required"})
 	}
 
@@ -150,19 +150,93 @@ func ReplyChat(c *fiber.Ctx) error {
 
 }
 
-// func GetAllRedisData(c *fiber.Ctx) error {
+func GetMyChats(c *fiber.Ctx) error {
+	userId := c.Params("userid")
 
-// 	val, err := database.LoadChat("6835d84d563da2af95848d87")
+	objectID, err := primitive.ObjectIDFromHex(userId)
 
-// 	fmt.Println(err)
+	if err != nil {
+		return c.Render("allchats", fiber.Map{"error": "Invalid ID format"})
+	}
 
-// 	if err != nil {
-// 		return c.Status(500).JSON(fiber.Map{
-// 			"error": err,
-// 		})
-// 	}
+	db, ok := c.Locals("db").(*mongo.Database)
 
-// 	return c.Status(200).JSON(fiber.Map{
-// 		"data": val,
-// 	})
-// }
+	if !ok {
+		return c.Render("allchats", fiber.Map{
+			"error": "Database connection not available",
+		})
+	}
+
+	collection := db.Collection("chats")
+
+	filter := bson.M{"user_id": objectID}
+
+	var results []models.Chat
+
+	cursor, err := collection.Find(context.Background(), filter)
+
+	if err != nil {
+		return c.Render("allchats", fiber.Map{
+			"error": "Failed to fetch chats from database",
+		})
+	}
+
+	if err = cursor.All(context.TODO(), &results); err != nil {
+		return c.Render("allchats", fiber.Map{
+			"error": "Failed to fetch chats from database",
+		})
+	}
+
+	type ChatView struct {
+		ID    string
+		Title string
+		UserID string
+	}
+
+	chatViews := make([]ChatView, 0, len(results)) // pre-allocate capacity
+
+	for _, chat := range results {
+		chatViews = append(chatViews, ChatView{
+			ID:    chat.ID.Hex(),
+			Title: chat.Title,
+			UserID: chat.UserID.Hex(),
+		})
+	}
+
+	return c.Render("allchats", fiber.Map{ "Chats": chatViews })
+}
+
+func DeleteChat(c *fiber.Ctx) error {
+	chatID := c.Params("chatid")
+
+	objectID, err := primitive.ObjectIDFromHex(chatID)
+	if err != nil {
+		return c.Render("allchats", fiber.Map{"error": "Invalid ID format"})
+	}
+
+	db, ok := c.Locals("db").(*mongo.Database)
+	if !ok {
+		
+		return c.Render("allchats", fiber.Map{"error": "Database connection not available"})
+	}
+
+	collection := db.Collection("chats")
+
+	// Delete the document
+	result, err := collection.DeleteOne(context.Background(), bson.M{"_id": objectID})
+	if err != nil {
+		return c.Render("allchats", fiber.Map{"error": "Failed to delete chat"})
+	}
+
+	if result.DeletedCount == 0 {
+		return c.Render("allchats", fiber.Map{"error": "Chat not found"})
+	}
+
+	// Redirect back to the user's chat list
+	userID := c.Query("user")
+	if userID != "" {
+		return c.Redirect("/mychats/" + userID)
+	}
+
+	return c.SendString("Chat deleted")
+}

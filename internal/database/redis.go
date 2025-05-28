@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"encoding/json"
+	"time"
 
 	"github.com/redis/go-redis/v9"
 	"github.com/tylerjusfly/foodchatai/internal/models"
@@ -32,9 +33,13 @@ func PersistMessage(chatID, sender, msg string) error {
 
     data, _ := json.Marshal(message)
 
-	// fmt.Println(json.Unmarshal(data, ""))
+    // Push the message to the list
+	if err := rdb.RPush(ctx, chatID, data).Err(); err != nil {
+		return err
+	}
 
-    return rdb.RPush(ctx, chatID, data).Err()
+	// Set TTL to 1 hour (3600 seconds)
+	return rdb.Expire(ctx, chatID, time.Hour).Err()
 }
 
 func LoadChat(chatID string) ([]models.ChatMessage, error) {

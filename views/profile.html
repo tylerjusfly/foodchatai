@@ -8,54 +8,38 @@
   </head>
   <body
     class="bg-cover bg-center min-h-screen flex items-center justify-center"
-    style="background-image: url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e')"
+    style="background-image: url('https://images.unsplash.com/photo-1747996714265-5f8116c20842')"
   >
     <div class="bg-[#23536c] text-white p-6 rounded-2xl w-full max-w-lg shadow-2xl">
       <!-- Header -->
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-xl font-bold">Profile</h2>
-        <div class="flex gap-4 text-white/80">
-          <button title="Chat">💬</button>
-          <button title="Toggle Mode">🌓</button>
-          <button title="Notifications">🔔</button>
-          <button title="More">⋮</button>
-        </div>
+       
       </div>
 
       <!-- Profile Info -->
       <div class="flex flex-col items-center">
         <img
-          src="https://randomuser.me/api/portraits/men/32.jpg"
+          src="https://randomuser.me/api/portraits/men/31.jpg"
           alt="Profile"
           class="w-24 h-24 rounded-full mb-3 border-4 border-white"
         />
         <h1 class="text-2xl font-semibold">{{.Name}}</h1>
-        <p class="text-sm text-blue-200">Snowboarder, superhero and writer.</p>
-        <p class="text-sm text-blue-200 mb-4 text-center px-4">Sometimes I work at Google as Executive Chairman</p>
 
-        <!-- Stats -->
-        <div class="w-full bg-[#317aa0] p-4 rounded-xl mb-4 flex justify-around">
-          <div class="text-center">
-            <p class="font-bold text-lg">0</p>
-            <p class="text-sm text-blue-300">Chats</p>
-          </div>
-          <div class="text-center">
-            <p class="font-bold text-lg">0</p>
-            <p class="text-sm text-blue-300">Plans</p>
-          </div>
-          <div class="text-center">
-            <p class="font-bold text-lg">0</p>
-            <p class="text-sm text-blue-300">Following</p>
-          </div>
-        </div>
-
-        <!-- Follow Button -->
-        <div class="w-full text-center mb-4">
+        <!-- Buttons Container -->
+        <div class="w-full flex justify-center gap-4 m-4">
           <button
             onclick="CreateChat()"
             class="bg-white text-[#23536c] px-6 py-2 rounded-full font-semibold hover:bg-blue-100 transition"
           >
             Chat With AI
+          </button>
+
+          <button
+            onclick="window.location.href='/mychats/{{.ID}}'"
+            class="bg-[#317aa0] text-white px-6 py-2 rounded-full font-semibold hover:bg-blue-[#317aa0] transition"
+          >
+            View Chats
           </button>
         </div>
 

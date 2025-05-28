@@ -6,8 +6,6 @@ A modern, mvc-app using **Golang**, **OpenAI**, **MongoDB**, **Redis**, and **HT
 
 ---
 
----
-
 ## 🛠️ Getting Started
 
 ### 1. Clone the Repository
