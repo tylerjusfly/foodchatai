@@ -90,7 +90,7 @@
         if (response.ok) {
           window.location.href = `/profile/${data.id}`;
         } else {
-          statusMessage.textContent = data.message || 'Verification failed.';
+          statusMessage.textContent = data.error || 'Verification failed.';
         }
       } catch (err) {
         statusMessage.textContent = 'Network error during verification.';

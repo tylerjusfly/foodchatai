@@ -1,12 +1,8 @@
 package handlers
 
 import (
-	"context"
-	"time"
-
 	"github.com/gofiber/fiber/v2"
-	"github.com/tylerjusfly/foodchatai/internal/models"
-	"go.mongodb.org/mongo-driver/bson"
+	"github.com/tylerjusfly/foodchatai/internal/utils"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -31,33 +27,53 @@ func SignIn(c *fiber.Ctx) error {
 
 	collection := db.Collection("profiles")
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	filter := bson.M{"email": input.Email}
-	var result models.Profile
-
-	err := collection.FindOne(ctx, filter).Decode(&result)
+	user, err := utils.GetUserByEmail(collection, input.Email)
 
 	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return c.Status(200).JSON(fiber.Map{
-				"error": "This user is not registered yet",
-			})
-		}
-		return c.Status(500).JSON(fiber.Map{
-			"error": "Failed to query database",
-		})
+		return c.Status(500).JSON(fiber.Map{"error": "user email does not exists"})
 	}
+
+	go utils.SendTokenEmail(user.Email, "12345")
 
 	return c.Status(200).JSON(fiber.Map{
 		"message": "Email sent",
-		"id": result.ID.Hex(),
+		"id":      user.ID,
 	})
 }
+
 func VerifyEmail(c *fiber.Ctx) error {
+
+	var input struct {
+		Email string `json:"email"`
+		Code string `json:"code"`
+	}
+
+	if err := c.BodyParser(&input); err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "error in Json"})
+	}
+
+	if input.Email == "" {
+		return c.Status(400).JSON(fiber.Map{"error": "Please provide an email address"})
+	}
+
+	if input.Code == "" {
+		return c.Status(400).JSON(fiber.Map{"error": "Enter the code sent to your mail"})
+	}
+
+		db, ok := c.Locals("db").(*mongo.Database)
+	if !ok {
+		return c.Status(500).JSON(fiber.Map{"error": "Database connection not available"})
+	}
+
+	collection := db.Collection("profiles")
+
+	user, err := utils.GetUserByEmail(collection, input.Email)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "user email does not exists"})
+	}
 
 	return c.Status(200).JSON(fiber.Map{
 		"message": "Email verified",
+		"id": user.ID,
 	})
 }
