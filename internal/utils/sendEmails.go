@@ -8,7 +8,7 @@ import (
 func SendTokenEmail(email, token string) {
 
 	from := "tylerjusfly1@gmail.com"
-	password := "uqqiahwdvqkdvttz"
+	password := ""
 
 	to := []string{"tylerjusfly1@gmail.com"}
 
