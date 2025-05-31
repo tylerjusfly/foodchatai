@@ -134,3 +134,27 @@ func CreateProfile(c *fiber.Ctx) error{
 	})
 
 }
+
+func UpdateEmail(c *fiber.Ctx) error{
+
+	var input struct{
+		email string
+		userid string
+	}
+
+	if err := c.BodyParser(&input); err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "error in Json"})
+	}
+
+	if input.userid == ""{
+		return c.Status(404).JSON(fiber.Map{"error": "user ID is required"})
+	}
+
+	if input.email == ""{
+		return c.Status(404).JSON(fiber.Map{"error": "email is required"})
+	}
+
+	return c.Status(500).JSON(fiber.Map{
+		"error": "user defined error",
+	})
+}

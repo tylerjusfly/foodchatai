@@ -156,15 +156,13 @@ func GetMyChats(c *fiber.Ctx) error {
 	objectID, err := primitive.ObjectIDFromHex(userId)
 
 	if err != nil {
-		return c.Render("allchats", fiber.Map{"error": "Invalid ID format"})
+		return c.Status(400).JSON(fiber.Map{"error": "Invalid ID format"})
 	}
 
 	db, ok := c.Locals("db").(*mongo.Database)
 
 	if !ok {
-		return c.Render("allchats", fiber.Map{
-			"error": "Database connection not available",
-		})
+		return c.Status(500).JSON(fiber.Map{"error": "Database connection not available"})
 	}
 
 	collection := db.Collection("chats")
@@ -176,13 +174,13 @@ func GetMyChats(c *fiber.Ctx) error {
 	cursor, err := collection.Find(context.Background(), filter)
 
 	if err != nil {
-		return c.Render("allchats", fiber.Map{
+		return c.Status(400).JSON(fiber.Map{
 			"error": "Failed to fetch chats from database",
 		})
 	}
 
 	if err = cursor.All(context.TODO(), &results); err != nil {
-		return c.Render("allchats", fiber.Map{
+		return c.Status(400).JSON(fiber.Map{
 			"error": "Failed to fetch chats from database",
 		})
 	}
@@ -203,7 +201,7 @@ func GetMyChats(c *fiber.Ctx) error {
 		})
 	}
 
-	return c.Render("allchats", fiber.Map{ "Chats": chatViews })
+	return c.Status(200).JSON(fiber.Map{ "Chats": chatViews })
 }
 
 func DeleteChat(c *fiber.Ctx) error {
@@ -211,13 +209,13 @@ func DeleteChat(c *fiber.Ctx) error {
 
 	objectID, err := primitive.ObjectIDFromHex(chatID)
 	if err != nil {
-		return c.Render("allchats", fiber.Map{"error": "Invalid ID format"})
+		return c.Status(404).JSON(fiber.Map{"error": "Invalid ID format"})
 	}
 
 	db, ok := c.Locals("db").(*mongo.Database)
 	if !ok {
 		
-		return c.Render("allchats", fiber.Map{"error": "Database connection not available"})
+		return c.Status(500).JSON(fiber.Map{"error": "Database connection not available"})
 	}
 
 	collection := db.Collection("chats")
@@ -225,18 +223,13 @@ func DeleteChat(c *fiber.Ctx) error {
 	// Delete the document
 	result, err := collection.DeleteOne(context.Background(), bson.M{"_id": objectID})
 	if err != nil {
-		return c.Render("allchats", fiber.Map{"error": "Failed to delete chat"})
+		return c.Status(400).JSON(fiber.Map{"error": "Failed to delete chat"})
 	}
 
 	if result.DeletedCount == 0 {
-		return c.Render("allchats", fiber.Map{"error": "Chat not found"})
+		return c.Status(404).JSON(fiber.Map{"error": "Cannot find chat to delete"})
 	}
 
-	// Redirect back to the user's chat list
-	userID := c.Query("user")
-	if userID != "" {
-		return c.Redirect("/mychats/" + userID)
-	}
-
-	return c.SendString("Chat deleted")
+	
+	return c.Status(200).JSON(fiber.Map{"error": "Chat deleted"})
 }

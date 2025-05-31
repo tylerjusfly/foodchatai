@@ -59,6 +59,7 @@ func main() {
 	app.Get("/profile/:id", handlers.GetProfile)
 	
 	app.Post("/api/profile", handlers.CreateProfile)
+	app.Post("/api/profile/update", handlers.UpdateEmail)
 
 	// Chat Routes
 	app.Get("/chat", handlers.GetChatIndex)
@@ -66,12 +67,11 @@ func main() {
 	app.Get("/chat/:chatId", handlers.GetChatPage)
 	app.Get("/mychats/:userid", handlers.GetMyChats)
 
-	app.Post("/chats/delete/:chatid", handlers.DeleteChat)
+	app.Delete("/chats/delete/:chatid", handlers.DeleteChat)
 
 	app.Post("/ai/reply", handlers.ReplyChat)
 
 	app.Use(func(c *fiber.Ctx) error {
-		// return c.Status(400)
 		return c.Render("error", fiber.Map{
 			"Route": "/",
 		})
