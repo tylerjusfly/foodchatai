@@ -33,7 +33,8 @@ func SignIn(c *fiber.Ctx) error {
 		return c.Status(500).JSON(fiber.Map{"error": "user email does not exists"})
 	}
 
-	go utils.SendTokenEmail(user.Email, "12345")
+	// go utils.SendTokenEmail(user.Email, "12345")
+	go utils.SendTokenWithResend(user.Email, "12345")
 
 	return c.Status(200).JSON(fiber.Map{
 		"message": "Email sent",
@@ -69,7 +70,11 @@ func VerifyEmail(c *fiber.Ctx) error {
 
 	user, err := utils.GetUserByEmail(collection, input.Email)
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"error": "user email does not exists"})
+		return c.Status(500).JSON(fiber.Map{"error": "user data does not exists"})
+	}
+	
+	if input.Code != "12345" {
+		return c.Status(400).JSON(fiber.Map{"error": "user data does not exists"})
 	}
 
 	return c.Status(200).JSON(fiber.Map{

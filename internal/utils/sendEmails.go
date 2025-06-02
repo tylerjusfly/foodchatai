@@ -3,12 +3,13 @@ package utils
 import (
 	"fmt"
 	"net/smtp"
+	"os"
 )
 
 func SendTokenEmail(email, token string) {
 
 	from := "tylerjusfly1@gmail.com"
-	password := ""
+	password := os.Getenv("GOOGLE_APP_PASSWORD")
 
 	to := []string{"tylerjusfly1@gmail.com"}
 
